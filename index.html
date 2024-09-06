@@ -8,46 +8,49 @@
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css">
+		<link rel="stylesheet" href="dist/theme/dracula.css">
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+		
+		<link rel="stylesheet" href="css/custom.css">
 	</head>
 	<body>
 		<div class="reveal">
 			<div class="slides">
 				<section>
 					<h2>Problem Statement</h2>
-					<p>Addressing the challenge of integrating Building Integrated Photovoltaic (BIPV) potential estimation and shadow analysis using innovative machine learning and 3D modeling techniques</p>
+					<p>Addressing the challenge of calculating <i>Building Integrated Photovoltaic</i> (BIPV) potential estimation using <i>LOD-1 3D city model</i> factoring in shadow analysis and using innovative machine learning and 3D modeling techniques</p>
 				</section>
 
 				<section>
 					<h2>ML Model: YOLOv8 + SAM</h2>
 					<ul>
 						<li class="fragment">Object detection: <code>YOLOv8</code></li>
-						<li class="fragment">Image Segmentation: Segment Anything Model</li>
-						<li class="fragment">Dataset: xView, Cartosat-3 images (LabelMe)</li>
+						<li class="fragment">Image Segmentation: <code>Segment Anything Model</code></li>
+						<li class="fragment">Dataset: <code>xView</code>, <code>Cartosat-3 images</code> (LabelMe)</li>
 					</ul>
-					<img class="fragment" src="assets/kriti1.png" height="280px" alt="YOLOv8 Results">
-					<img class="fragment" src="assets/kriti2.png" height="280px" alt="YOLO + SAM Results">
-					<img class="fragment" src="assets/kriti3.png" height="280px" alt="YOLO + SAM + bbox">
+					<img class="fragment" src="assets/kriti1.png" height="250px" alt="YOLOv8 Results">
+					<img class="fragment" src="assets/kriti2.png" height="250px" alt="YOLO + SAM Results">
+					<img class="fragment" src="assets/kriti3.png" height="250px" alt="YOLO + SAM + bbox">
 				</section>
 
 				<section>
 					<h2>3D Modelling</h2>
 					<ul>
 						<li class="fragment"><code>OpenStreetMap</code> buildings data</li>
-						<li class="fragment">Calculating extrusion</li>
+						<li class="fragment">Calculating extrusion values</li>
 						<li class="fragment"><code>Three.js</code> for rendering</li>
+						<li class="fragment">Calculating exposed LOD-1 polygon area</li>
 					</ul>
-					<img class="fragment" height="350px" src="assets/megh.gif" alt="3D Modelling">
+					<img class="fragment" height="300px" src="assets/megh.gif" alt="3D Modelling">
 				</section>
 
 				<section>
 					<h2>Shadow Calculation</h2>
 					<ul>
 						<li class="fragment"><code>pybdshadow</code> for shadow geometry</li>
-						<li class="fragment"><b>Parameters:</b> sun position, building height, location and time</li>
+						<li class="fragment"><b>Parameters:</b> Sun Position, Building Height, Location and Time</li>
 					</ul>
 					<img class="fragment" height="350px" src="assets/anushka1.png" alt="Shadow geometry">
 				</section>
@@ -55,29 +58,45 @@
 				<section>
 					<h2>Solar Energy and PV Output</h2>
 					<ul>
-						<li class="fragment">Data from the Global Solar Atlas</li>
-						<li class="fragment">PVOUT calculations using Solargis algorithms</li>
-						<li class="fragment">Inputs: GTI, TEMP</li>
+						<li class="fragment">Data received from the <i>Global Solar Atlas</i></li>
+						<li class="fragment">PVOUT calculations using <i>Solargis algorithms</i></li>
+						<li class="fragment">Inputs: <code>GTI</code>, <code>TEMP</code></li>
 						<li class="fragment">PV power production potential estimation</li>
 					</ul>
 					<img class="fragment" height="300px" src="assets/sohini1.png" alt="PV Potential">
+					<span class="fragment">
+						<img height="300px" src="assets/sohini2.jpg" alt="PVOUT Data Map">
+						<img height="200px" src="assets/sohini3.jpg" alt="PVOUT Scale">
+					</span>
 				</section>
 
 				<section>
-					<section>
-						<h2>Web Application</h2>
-						<p>The web-based tool would allow users to input required parameters and visualize BIPV potential and shadow analysis through an interactive 3D viewer</p>
-					</section>
-					<section data-background-iframe="https://bipv-web.vercel.app/" data-background-interactive></section>
+					<h2>Web Application</h2>
+					<p>The web-based tool would allow users to <i>input required parameters</i> and <i>visualize BIPV potential</i> (and rooftop PV potential) along with shadow analysis for different buildings through an <i>interactive 3D viewer</i>.</p>
+					<!-- <p>The web app will prioritize <i>scalability</i>, <i>clean design</i> and <i>user friendliness</i>, and delivering <i>comprehensive data insights</i>.</p> -->
 				</section>
+				<section data-background-iframe="https://bipv-web.vercel.app/" data-background-interactive></section>
 
 				<section>
-					<h2>Future Plans</h2>
+					<h2>Future Plans and Aspirations</h2>
 					<ul>
-						<li class="fragment">Individual building analysis</li>
+						<li class="fragment">Analysis for trade-offs for single building cases</li>
 						<li class="fragment">Material research and optimizations</li>
 						<li class="fragment">Sunflower mechanism for solar tracking</li>
 						<li class="fragment">Possibly account for terrain undulations</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Thank you!</h2>
+					<h4><b>~ Team Athena ~</b></h4>
+					<ul>
+						<li><code>Anushka Agrawal&nbsp;&nbsp;</code> - 2022B5AA0682H</li>
+						<li><code>Chaitanya Krishna</code> - 2022A7PS0231H</li>
+						<li><code>Meghraj Goswami</code> - 2022A2B41869H</li>
+						<li><code>Kriti Saluja&nbsp;&nbsp;&nbsp;</code> - 2022B5A70698H</li>
+						<li><code>Neha Bhagwat</code> - 2023A7PS0067H</li>
+						<li><code>Sohini Kayal</code> - 2022B5A30867H</li>
 					</ul>
 				</section>
 			</div>
