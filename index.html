@@ -36,6 +36,47 @@
 				</section>
 
 				<section>
+					<pre><code data-line-numbers="1-2|4|11-15|26-37">%cd /content/drive/MyDrive/YoloV8/final_dataset
+!yolo task=detect mode=train model=/content/drive/MyDrive/YoloV8/final_dataset_buildingsonly/runs/detect/train15/weights/best.pt data= final_yaml.yaml epochs=175 imgsz=640 batch=8 plots=True save_period=10
+
+model = YOLO(r"/content/drive/MyDrive/best (1).pt")
+results = model(image)  # return a list of Results objects
+img = results[0].plot(font_size=2, pil=True)
+print(results)
+cv2.imwrite("/content/1.jpg", img)
+print(results)
+map={0:[], 51:[]}
+for result in results:
+	boxes = result.boxes.xyxy.tolist()
+	classes = result.boxes.cls.tolist()
+	names = result.names
+	confidences = result.boxes.conf.tolist()
+
+print(boxes)
+print(classes)
+print(names)
+for i in range(0,len(boxes)):
+	cl=int(classes[i])
+	map[cl].append(boxes[i])
+
+print(map)
+
+!wget https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth
+import cv2
+from segment_anything import sam_model_registry, SamAutomaticMaskGenerator, SamPredictor
+image = cv2.cvtColor(cv2.imread("Image.tif"), cv2.COLOR_BGR2RGB)
+# SamAutomaticMaskGenerator, SamPredictor
+sam_checkpoint = "sam_vit_h_4b8939.pth"
+model_type = "vit_h"
+sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
+device="cpu"
+sam.to(device=device)
+predictor = SamPredictor(sam)
+predictor.set_image(image)
+					</code></pre>
+				</section>
+
+				<section>
 					<h2>3D Modelling</h2>
 					<ul>
 						<li class="fragment"><code>OpenStreetMap</code> buildings data</li>
@@ -56,6 +97,35 @@
 				</section>
 
 				<section>
+					<pre><code data-line-numbers="6-12">import pandas as pd
+import geopandas as gpd
+#Read building GeoJSON data
+buildings = gpd.read_file(r'data/bd_demo_2.json')
+
+import pybdshadow
+#Given UTC datetime
+date = pd.to_datetime('2024-06-06 12:45:33.959797119')\
+    .tz_localize('Asia/Shanghai')\
+    .tz_convert('UTC')
+#Calculate building shadow for sun light
+shadows = pybdshadow.bdshadow_sunlight(buildings,date)
+
+import matplotlib.pyplot as plt
+fig = plt.figure(1, (12, 12))
+ax = plt.subplot(111)
+# plot buildings
+buildings.plot(ax=ax)
+# plot shadows
+shadows['type'] += ' shadow'
+shadows.plot(ax=ax, alpha=0.7,
+             column='type',
+             categorical=True,
+             cmap='Set1_r',
+             legend=True)
+plt.show()</code></pre>
+				</section>
+
+				<section>
 					<h2>Solar Energy and PV Output</h2>
 					<ul>
 						<li class="fragment">Data received from the <i>Global Solar Atlas</i></li>
@@ -68,6 +138,56 @@
 						<img height="300px" src="assets/sohini2.jpg" alt="PVOUT Data Map">
 						<img height="200px" src="assets/sohini3.jpg" alt="PVOUT Scale">
 					</span>
+				</section>
+
+				<section>
+					<pre><code data-line-numbers="9-24">import numpy as np
+import rasterio
+from rasterio.warp import reproject, Resampling
+import matplotlib.pyplot as plt
+
+mask_raster_path = '/content/drive/MyDrive/SIH/segment_file_4326.tif'  
+ghi_raster_path = '/content/drive/My Drive/SIH/GHI.tif'            
+
+with rasterio.open(mask_raster_path) as mask_src:
+	mask_raster = mask_src.read(1)
+
+	with rasterio.open(ghi_raster_path) as ghi_src:
+		resampled_ghi = np.empty((mask_raster.shape[0], mask_raster.shape[1]), dtype=np.float32)
+		reproject(
+			source=ghi_src.read(1),
+			destination=resampled_ghi,
+			src_transform=ghi_src.transform,
+			src_crs=ghi_src.crs,
+			dst_transform=mask_src.transform,
+			dst_crs=mask_src.crs,
+			resampling=Resampling.bilinear
+		)
+
+		pv_potential = np.where(mask_raster == 1, resampled_ghi, 0)
+
+		pv_potential_path = '/content/drive/My Drive/SIH/pv_potential.tif'
+		ghi_meta = ghi_src.meta.copy()
+		ghi_meta.update({
+			'dtype': 'float32',
+			'count': 1
+		})
+		with rasterio.open(pv_potential_path, 'w', **ghi_meta) as dst:
+			dst.write(pv_potential, 1)
+
+def plot_raster(file_path, title):
+	with rasterio.open(file_path) as src:
+		data = src.read(1)
+		plt.figure(figsize=(10, 6))
+		plt.imshow(data, cmap='viridis', interpolation='none')
+		plt.colorbar(label='PV Potential')
+		plt.title(title)
+		plt.xlabel('Pixel')
+		plt.ylabel('Pixel')
+		plt.show()
+
+plot_raster(pv_potential_path, 'PV Potential in Building Areas')
+					</code></pre>
 				</section>
 
 				<section>
